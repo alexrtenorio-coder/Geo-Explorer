@@ -1,0 +1,515 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Geo-Explorer: explore trilhas de aprendizagem, desafios e certificados demonstrativos.">
+  <title>Geo-Explorer | Trilhas de Aprendizagem</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --ink: #172033;
+      --muted: #637087;
+      --line: #dfe6ef;
+      --primary: #2457d6;
+      --primary-dark: #173fa7;
+      --soft: #eaf0ff;
+      --green: #137b52;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, system-ui, Arial, sans-serif;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid #8eafff;
+      outline-offset: 2px;
+    }
+    .hero {
+      background: #111c35;
+      color: white;
+      padding: 32px 20px;
+    }
+    .hero-inner, main, footer { max-width: 1120px; margin: auto; }
+    .hero-inner { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .logo {
+      width: 50px; height: 50px; display: grid; place-items: center;
+      background: #dbe7ff; color: #163a91; border-radius: 15px;
+      font-size: 24px; font-weight: 900;
+    }
+    .eyebrow { text-transform: uppercase; letter-spacing: 2px; font-size: 11px; font-weight: 800; color: #a9c1ff; margin: 0 0 5px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(24px, 4vw, 36px); line-height: 1.15; margin-bottom: 6px; }
+    .hero p:last-child { margin-bottom: 0; color: #d2dbed; }
+    .demo { border: 1px solid #8295bd; border-radius: 20px; padding: 7px 11px; font-size: 11px; white-space: nowrap; }
+    main { padding: 28px 20px 44px; }
+    .section-head { margin-bottom: 16px; }
+    .section-head h2 { margin-bottom: 5px; font-size: 22px; }
+    .muted { color: var(--muted); font-size: 14px; }
+    .notice { background: #fff8e5; border: 1px solid #f0dfa8; border-radius: 12px; padding: 13px 15px; margin-bottom: 20px; font-size: 13px; color: #70551a; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 26px; }
+    .stat, .panel, .track, .result-card {
+      background: var(--surface); border: 1px solid var(--line); border-radius: 15px;
+    }
+    .stat { padding: 18px; }
+    .stat span { color: var(--muted); font-size: 12px; }
+    .stat strong { display: block; font-size: 28px; margin-top: 3px; }
+    .panel { padding: 20px; margin-bottom: 22px; }
+    .filters { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 12px; align-items: end; }
+    label { display: block; font-size: 12px; font-weight: 700; color: #48546a; }
+    input, select {
+      display: block; width: 100%; min-width: 0; margin-top: 6px;
+      border: 1px solid #ccd5e3; border-radius: 9px; padding: 11px;
+      background: white; color: var(--ink);
+    }
+    .btn {
+      border: 1px solid var(--line); background: white; color: var(--ink);
+      border-radius: 9px; padding: 10px 14px; font-weight: 700; font-size: 13px;
+    }
+    .btn-primary { background: var(--primary); border-color: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .track-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .track { padding: 18px; display: flex; flex-direction: column; min-width: 0; }
+    .track h3 { font-size: 17px; margin: 12px 0 7px; }
+    .track p { color: var(--muted); font-size: 13px; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { font-size: 11px; padding: 5px 8px; border-radius: 20px; background: var(--soft); color: #234cae; font-weight: 700; }
+    .track .btn { margin-top: auto; }
+    .track .meta { font-size: 12px; color: var(--muted); margin: 0 0 15px; }
+    .track .progress { margin: 0 0 14px; font-size: 12px; color: var(--green); font-weight: 700; }
+    .command-row { display: flex; gap: 10px; }
+    .command-row input { margin: 0; }
+    .examples { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .examples button { font-size: 12px; }
+    .output { background: #101a2d; color: #e3ebfb; border-radius: 12px; padding: 16px; margin-top: 14px; min-height: 75px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; }
+    .challenge-box { border: 1px dashed #9db2dd; border-radius: 12px; padding: 16px; margin-top: 14px; }
+    .challenge-box h3 { margin-bottom: 6px; }
+    .certificate {
+      background: #fffdf6; border: 2px solid #c6a755; border-radius: 8px;
+      padding: 28px 18px; text-align: center; margin-top: 14px;
+    }
+    .certificate .seal { font-size: 34px; }
+    .certificate h3 { font-family: Georgia, serif; font-size: 24px; color: #70551a; }
+    .certificate p { margin-bottom: 8px; }
+    .hidden { display: none !important; }
+    .empty { grid-column: 1 / -1; text-align: center; padding: 30px; color: var(--muted); }
+    footer { border-top: 1px solid var(--line); padding: 20px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; gap: 12px; }
+    @media (max-width: 780px) {
+      .hero-inner { align-items: flex-start; flex-direction: column; }
+      .stats { grid-template-columns: 1fr; }
+      .filters { grid-template-columns: 1fr 1fr; }
+      .track-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 520px) {
+      .filters, .track-grid { grid-template-columns: 1fr; }
+      .command-row { flex-direction: column; }
+      footer { flex-direction: column; }
+    }
+    @media print {
+      body { background: white; }
+      .hero, main > :not(#certificates), footer, .no-print { display: none !important; }
+      #certificates { display: block !important; }
+      .certificate { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">GE</div>
+        <div>
+          <p class="eyebrow">Learning explorer</p>
+          <h1>Geo-Explorer</h1>
+          <p>Descubra trilhas, pratique habilidades e acompanhe sua evolução.</p>
+        </div>
+      </div>
+      <span class="demo">PROJETO DEMONSTRATIVO</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="notice">
+      <strong>Sobre os dados:</strong> as trilhas, os desafios e os certificados são
+      fictícios e servem para demonstrar o funcionamento do projeto. O certificado
+      gerado não representa uma credencial oficial.
+    </div>
+
+    <section class="stats" aria-label="Resumo do catálogo">
+      <article class="stat"><span>Trilhas disponíveis</span><strong id="totalTracks">0</strong></article>
+      <article class="stat"><span>Trilhas concluídas nesta sessão</span><strong id="completedTracks">0</strong></article>
+      <article class="stat"><span>Desafios gerados nesta sessão</span><strong id="challengeCount">0</strong></article>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Explore as trilhas</h2>
+        <p class="muted">Pesquise por tema, nível ou duração.</p>
+      </div>
+      <div class="panel">
+        <div class="filters">
+          <label>Pesquisar
+            <input id="search" type="search" placeholder="Ex.: Python, dados, IA">
+          </label>
+          <label>Nível
+            <select id="levelFilter">
+              <option value="">Todos</option>
+              <option>Iniciante</option>
+              <option>Intermediário</option>
+              <option>Avançado</option>
+            </select>
+          </label>
+          <label>Tema
+            <select id="categoryFilter">
+              <option value="">Todos</option>
+              <option>Tecnologia</option>
+              <option>Dados</option>
+              <option>Inteligência Artificial</option>
+              <option>Produtividade</option>
+            </select>
+          </label>
+          <button id="clearFilters" class="btn" type="button">Limpar filtros</button>
+        </div>
+      </div>
+      <div id="trackGrid" class="track-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="panel" style="margin-top:28px">
+      <div class="section-head">
+        <h2>Consultor de trilhas</h2>
+        <p class="muted">Digite um comando para consultar o catálogo e gerar atividades.</p>
+      </div>
+      <div class="command-row">
+        <input id="commandInput" type="text" aria-label="Comando" placeholder="Ex.: buscar dados ou desafio python">
+        <button id="runCommand" class="btn btn-primary" type="button">Executar comando</button>
+      </div>
+      <div class="examples" aria-label="Exemplos de comandos">
+        <button class="btn" data-command="ajuda" type="button">ajuda</button>
+        <button class="btn" data-command="listar trilhas" type="button">listar trilhas</button>
+        <button class="btn" data-command="buscar dados" type="button">buscar dados</button>
+        <button class="btn" data-command="desafio python" type="button">desafio python</button>
+        <button class="btn" data-command="conteudo ia" type="button">conteudo ia</button>
+      </div>
+      <div id="commandOutput" class="output" role="status" aria-live="polite">Digite “ajuda” para conhecer os comandos disponíveis.</div>
+      <div id="challengeArea" class="challenge-box hidden">
+        <h3 id="challengeTitle">Desafio</h3>
+        <p id="challengeDescription"></p>
+        <button id="completeChallenge" class="btn btn-primary" type="button">Marcar trilha como concluída</button>
+      </div>
+    </section>
+
+    <section id="certificates" class="panel">
+      <div class="section-head">
+        <h2>Certificados demonstrativos</h2>
+        <p class="muted">Conclua uma trilha para gerar um certificado de demonstração.</p>
+      </div>
+      <div id="certificateList">
+        <p class="muted">Nenhum certificado gerado nesta sessão.</p>
+      </div>
+      <button id="printCertificates" class="btn no-print" type="button">Imprimir / salvar em PDF</button>
+    </section>
+  </main>
+
+  <footer>
+    <span>Geo-Explorer · Projeto educacional de portfólio</span>
+    <span>HTML · CSS · JavaScript · GitHub Pages</span>
+  </footer>
+
+  <script>
+    "use strict";
+
+    // Base fictícia do Geo-Explorer.
+    const tracks = [
+      {
+        id: "GE-001", title: "Fundamentos de Python", category: "Tecnologia",
+        level: "Iniciante", hours: 4,
+        description: "Variáveis, tipos de dados, condicionais e laços de repetição.",
+        contents: ["Variáveis e tipos", "Condicionais", "Laços", "Funções"],
+        challenge: "Crie um programa que receba três notas, calcule a média e informe se o estudante foi aprovado conforme um critério que você definir."
+      },
+      {
+        id: "GE-002", title: "Análise de Dados com SQL", category: "Dados",
+        level: "Intermediário", hours: 6,
+        description: "Consultas, filtros, agrupamentos e interpretação de resultados.",
+        contents: ["SELECT e WHERE", "JOIN", "GROUP BY", "Indicadores"],
+        challenge: "Considere uma tabela de vendas fictícia. Escreva uma consulta SQL que calcule o faturamento total por categoria e ordene o resultado do maior para o menor."
+      },
+      {
+        id: "GE-003", title: "Introdução à Inteligência Artificial", category: "Inteligência Artificial",
+        level: "Iniciante", hours: 3,
+        description: "Conceitos de IA, modelos generativos, prompts e uso responsável.",
+        contents: ["O que é IA", "Modelos generativos", "Prompts", "Ética e validação"],
+        challenge: "Escreva um prompt para resumir um texto técnico. Defina público-alvo, formato de saída e duas verificações para evitar informações inventadas."
+      },
+      {
+        id: "GE-004", title: "Visualização de Dados", category: "Dados",
+        level: "Intermediário", hours: 5,
+        description: "Indicadores, escolha de gráficos e comunicação de resultados.",
+        contents: ["Tipos de gráficos", "KPIs", "Storytelling", "Acessibilidade"],
+        challenge: "Proponha um painel com três indicadores para acompanhar entregas atrasadas. Explique o que cada indicador mede e qual decisão ele pode apoiar."
+      },
+      {
+        id: "GE-005", title: "Automação de Tarefas", category: "Produtividade",
+        level: "Iniciante", hours: 4,
+        description: "Mapeamento de processos, regras e automações simples.",
+        contents: ["Mapeamento", "Gatilhos", "Regras", "Monitoramento"],
+        challenge: "Desenhe um fluxo de automação que receba uma solicitação, valide os dados e direcione o pedido para aprovação ou correção."
+      },
+      {
+        id: "GE-006", title: "Machine Learning Aplicado", category: "Inteligência Artificial",
+        level: "Avançado", hours: 8,
+        description: "Preparação de dados, treinamento, avaliação e limitações de modelos.",
+        contents: ["Preparação", "Treinamento", "Métricas", "Viés e monitoramento"],
+        challenge: "Descreva como dividiria uma base fictícia em treino e teste e selecione métricas adequadas para um problema de classificação, justificando suas escolhas."
+      }
+    ];
+
+    const completed = new Set();
+    const certificates = [];
+    let challengeCount = 0;
+    let activeChallengeId = null;
+
+    const $ = (id) => document.getElementById(id);
+
+    function safeText(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[char]);
+    }
+
+    function filteredTracks() {
+      const query = $("search").value.trim().toLocaleLowerCase("pt-BR");
+      const level = $("levelFilter").value;
+      const category = $("categoryFilter").value;
+      return tracks.filter((track) => {
+        const searchable = [
+          track.title, track.category, track.description, track.level, ...track.contents
+        ].join(" ").toLocaleLowerCase("pt-BR");
+        return (!query || searchable.includes(query))
+          && (!level || track.level === level)
+          && (!category || track.category === category);
+      });
+    }
+
+    function renderTracks() {
+      const visible = filteredTracks();
+      $("trackGrid").innerHTML = visible.length ? visible.map((track) => `
+        <article class="track">
+          <div class="tag-row">
+            <span class="tag">${safeText(track.category)}</span>
+            <span class="tag">${safeText(track.level)}</span>
+          </div>
+          <h3>${safeText(track.title)}</h3>
+          <p>${safeText(track.description)}</p>
+          <p class="meta">${track.hours} horas estimadas · Código ${safeText(track.id)}</p>
+          ${completed.has(track.id) ? '<p class="progress">✓ Trilha concluída nesta sessão</p>' : ""}
+          <button class="btn btn-primary" data-track="${safeText(track.id)}" type="button">
+            Ver trilha e desafio
+          </button>
+        </article>
+      `).join("") : '<p class="empty">Nenhuma trilha encontrada. Experimente outros filtros.</p>';
+      $("totalTracks").textContent = tracks.length;
+      $("completedTracks").textContent = completed.size;
+    }
+
+    function findTrackByTerm(term) {
+      const normalized = term.trim().toLocaleLowerCase("pt-BR");
+      return tracks.find((track) =>
+        [track.title, track.category, track.id, ...track.contents]
+          .some((value) => value.toLocaleLowerCase("pt-BR").includes(normalized))
+      );
+    }
+
+    function showChallenge(track) {
+      activeChallengeId = track.id;
+      challengeCount++;
+      $("challengeCount").textContent = challengeCount;
+      $("challengeTitle").textContent = `Desafio: ${track.title}`;
+      $("challengeDescription").textContent = track.challenge;
+      $("challengeArea").classList.remove("hidden");
+      $("commandOutput").textContent =
+        `Desafio gerado para “${track.title}”. Leia a proposta, desenvolva sua solução e revise o resultado antes de marcar a trilha como concluída.`;
+      $("challengeArea").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function showTrack(track) {
+      $("commandOutput").textContent =
+        `${track.title} (${track.id})\n` +
+        `Tema: ${track.category}\nNível: ${track.level}\nDuração estimada: ${track.hours} horas\n\n` +
+        `Conteúdos:\n- ${track.contents.join("\n- ")}\n\n` +
+        `Desafio prático:\n${track.challenge}`;
+      activeChallengeId = track.id;
+      $("challengeTitle").textContent = `Desafio: ${track.title}`;
+      $("challengeDescription").textContent = track.challenge;
+      $("challengeArea").classList.remove("hidden");
+    }
+
+    function runCommand(rawCommand) {
+      const command = rawCommand.trim().toLocaleLowerCase("pt-BR");
+      if (!command) {
+        $("commandOutput").textContent = "Digite um comando. Use “ajuda” para ver as opções.";
+        return;
+      }
+
+      $("challengeArea").classList.add("hidden");
+
+      if (["ajuda", "help", "comandos"].includes(command)) {
+        $("commandOutput").textContent =
+          "COMANDOS DISPONÍVEIS\n" +
+          "• listar trilhas — mostra todas as trilhas.\n" +
+          "• buscar [termo] — procura trilhas por tema, nome ou conteúdo.\n" +
+          "• conteudo [termo] — mostra os tópicos de uma trilha encontrada.\n" +
+          "• desafio [termo] — gera um desafio prático relacionado.\n" +
+          "• certificado — lista certificados gerados nesta sessão.\n\n" +
+          "Exemplos: buscar dados | conteudo python | desafio ia";
+        return;
+      }
+
+      if (command === "listar trilhas" || command === "listar" || command === "trilhas") {
+        $("commandOutput").textContent = "TRILHAS DISPONÍVEIS\n" +
+          tracks.map((track) =>
+            `• ${track.title} — ${track.level}, ${track.hours} h [${track.id}]`
+          ).join("\n");
+        return;
+      }
+
+      if (command === "certificado" || command === "certificados") {
+        $("commandOutput").textContent = certificates.length
+          ? "CERTIFICADOS GERADOS NESTA SESSÃO\n" +
+            certificates.map((item) => `• ${item.title} — ${item.date}`).join("\n")
+          : "Ainda não há certificados. Selecione uma trilha, gere um desafio e marque a trilha como concluída.";
+        return;
+      }
+
+      const searchMatch = command.match(/^(buscar|pesquisar|conteudo|conteúdo|desafio)\s+(.+)$/);
+      if (searchMatch) {
+        const action = searchMatch[1];
+        const term = searchMatch[2];
+        const track = findTrackByTerm(term);
+        if (!track) {
+          $("commandOutput").textContent =
+            `Não encontrei uma trilha relacionada a “${term}”. Tente “listar trilhas” ou “buscar dados”.`;
+          return;
+        }
+        if (action === "desafio") {
+          showChallenge(track);
+        } else if (action === "conteudo" || action === "conteúdo") {
+          $("commandOutput").textContent =
+            `CONTEÚDOS — ${track.title}\n- ${track.contents.join("\n- ")}`;
+        } else {
+          showTrack(track);
+          if (action === "buscar" || action === "pesquisar") {
+            $("commandOutput").textContent =
+              `RESULTADO DA BUSCA\n${track.title}\nTema: ${track.category}\nNível: ${track.level}\nDuração: ${track.hours} h\nCódigo: ${track.id}`;
+          }
+        }
+        return;
+      }
+
+      $("commandOutput").textContent =
+        "Comando não reconhecido. Digite “ajuda” para consultar os comandos disponíveis.";
+    }
+
+    function completeActiveTrack() {
+      if (!activeChallengeId) {
+        $("commandOutput").textContent = "Primeiro selecione uma trilha e abra o desafio.";
+        return;
+      }
+      const track = tracks.find((item) => item.id === activeChallengeId);
+      if (!track) return;
+
+      if (!completed.has(track.id)) {
+        completed.add(track.id);
+        const date = new Date().toLocaleDateString("pt-BR");
+        certificates.push({ id: track.id, title: track.title, date });
+      }
+
+      renderTracks();
+      renderCertificates();
+      $("commandOutput").textContent =
+        `Trilha “${track.title}” marcada como concluída nesta sessão. Foi criado um certificado demonstrativo.`;
+      $("challengeArea").classList.add("hidden");
+    }
+
+    function renderCertificates() {
+      $("certificateList").innerHTML = certificates.length
+        ? certificates.map((certificate, index) => `
+          <article class="certificate">
+            <div class="seal" aria-hidden="true">✦</div>
+            <p class="eyebrow" style="color:#8b6a1c">GEO-EXPLORER · CERTIFICADO DEMONSTRATIVO</p>
+            <h3>Certificado de Conclusão</h3>
+            <p>Certificamos, para fins de demonstração do projeto, a conclusão da trilha:</p>
+            <h2>${safeText(certificate.title)}</h2>
+            <p>Código da trilha: ${safeText(certificate.id)}</p>
+            <p>Data de conclusão: ${safeText(certificate.date)}</p>
+            <p><strong>Este documento não é uma credencial oficial.</strong></p>
+            <p class="muted">Certificado demonstrativo nº ${String(index + 1).padStart(3, "0")}</p>
+          </article>
+        `).join("") : '<p class="muted">Nenhum certificado gerado nesta sessão.</p>';
+    }
+
+    $("search").addEventListener("input", renderTracks);
+    $("levelFilter").addEventListener("change", renderTracks);
+    $("categoryFilter").addEventListener("change", renderTracks);
+    $("clearFilters").addEventListener("click", () => {
+      $("search").value = "";
+      $("levelFilter").value = "";
+      $("categoryFilter").value = "";
+      renderTracks();
+    });
+
+    $("trackGrid").addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-track]");
+      if (!button) return;
+      const track = tracks.find((item) => item.id === button.dataset.track);
+      if (track) showTrack(track);
+      $("commandOutput").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+
+    $("runCommand").addEventListener("click", () => runCommand($("commandInput").value));
+    $("commandInput").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") runCommand($("commandInput").value);
+    });
+    document.querySelectorAll("[data-command]").forEach((button) => {
+      button.addEventListener("click", () => {
+        $("commandInput").value = button.dataset.command;
+        runCommand(button.dataset.command);
+      });
+    });
+    $("completeChallenge").addEventListener("click", completeActiveTrack);
+    $("printCertificates").addEventListener("click", () => window.print());
+
+    renderTracks();
+    renderCertificates();
+
+    // Exposição limitada para testes automatizados.
+    window.GeoExplorer = {
+      getTracks: () => tracks.map((track) => ({ ...track, contents: [...track.contents] })),
+      searchTracks: (term) => {
+        const normalized = String(term).toLocaleLowerCase("pt-BR");
+        return tracks.filter((track) =>
+          `${track.title} ${track.category} ${track.description} ${track.contents.join(" ")}`
+            .toLocaleLowerCase("pt-BR").includes(normalized)
+        );
+      },
+      getStats: () => ({
+        totalTracks: tracks.length,
+        completedTracks: completed.size,
+        challengeCount
+      }),
+      runCommand,
+      getCertificates: () => certificates.map((item) => ({ ...item }))
+    };
+  </script>
+</body>
+</html>
